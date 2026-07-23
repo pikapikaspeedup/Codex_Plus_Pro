@@ -411,11 +411,14 @@
       "codex-plus-pro-pet-clear-unread",
       clearUnread,
     );
+    const unreadCount = document.createElement("span");
+    unreadCount.className = "codex-plus-pro-pet-unread-count";
+    unreadCount.setAttribute("aria-hidden", "true");
     const status = document.createElement("span");
     status.className = "codex-plus-pro-pet-notification-status";
     status.setAttribute("aria-live", "polite");
 
-    toolbar.append(markReadButton, clearButton, status);
+    toolbar.append(unreadCount, markReadButton, clearButton, status);
     (document.body || document.documentElement).append(toolbar);
     return toolbar;
   };
@@ -426,23 +429,34 @@
     const toolbar = ensureToolbar();
     if (!toolbar) return;
 
-    const isChinese = /^zh\b/i.test(currentLocale);
+    const isChinese = /^zh\b/i.test(currentLocale) ||
+      getVisibleNotifications().some((notification) =>
+        /[\u3400-\u9fff]/u.test(String(notification?.title || "")),
+      );
+    const unreadCountBadge = toolbar.querySelector(".codex-plus-pro-pet-unread-count");
     const markReadButton = toolbar.querySelector(".codex-plus-pro-pet-mark-read");
     const clearButton = toolbar.querySelector(".codex-plus-pro-pet-clear-unread");
     const hasUnread = unreadCount > 0;
     toolbar.hidden = !hasUnread;
     toolbar.setAttribute(
       "aria-label",
-      isChinese ? "宠物未读通知操作" : "Unread pet notification actions",
+      isChinese
+        ? `${unreadCount} 条宠物未读通知`
+        : `${unreadCount} unread pet notification${unreadCount === 1 ? "" : "s"}`,
     );
-    const markReadLabel = isChinese
-      ? `全部已读 ${unreadCount}`
-      : `Mark all read ${unreadCount}`;
-    const clearLabel = isChinese
-      ? `清空未读 ${unreadCount}`
-      : `Clear unread ${unreadCount}`;
+    if (unreadCountBadge.textContent !== String(unreadCount)) {
+      unreadCountBadge.textContent = String(unreadCount);
+    }
+    const markReadLabel = isChinese ? "全部已读" : "Read all";
+    const clearLabel = isChinese ? "清除" : "Clear";
     if (markReadButton.textContent !== markReadLabel) markReadButton.textContent = markReadLabel;
     if (clearButton.textContent !== clearLabel) clearButton.textContent = clearLabel;
+    markReadButton.title = isChinese
+      ? "把这些任务标记为已读，并收起通知"
+      : "Mark these tasks as read and dismiss their notifications";
+    clearButton.title = isChinese
+      ? "仅收起悬浮通知，任务仍保持未读"
+      : "Dismiss the floating notifications without marking the tasks as read";
     markReadButton.disabled = markReadInFlight || !hasUnread;
     clearButton.disabled = markReadInFlight || !hasUnread;
   }
