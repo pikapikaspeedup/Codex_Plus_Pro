@@ -325,7 +325,7 @@ function buildInjectionSource(css) {
     const FLAT_PICKER_SURFACE_ATTRIBUTE = "data-codex-pokedex-flat-picker-surface";
     const FLAT_PICKER_FALLBACK_ATTRIBUTE = "data-codex-pokedex-flat-picker-fallback";
     const FLAT_PICKER_FAILURE_ATTRIBUTE = "data-codex-pokedex-flat-picker-failures";
-    const FLAT_PICKER_VERSION = "1.7.0";
+    const FLAT_PICKER_VERSION = "1.7.1";
     const ACTIVITY_CHANNEL_NAME = "codex-pokedex-pet-activity-v1";
     const SETTINGS_STORAGE_KEY = "codex-plus-pro-settings-v1";
     const CUSTOM_WALLPAPER_STORAGE_KEY = "codex-plus-pro-wallpaper-v1";
@@ -1755,7 +1755,7 @@ function buildInjectionSource(css) {
     window.__codexPlusProRuntimeCleanup = cleanupRuntime;
     return {
       active: true,
-      version: "1.7.0",
+      version: "1.7.1",
       avatarOverlay: isAvatarOverlay,
       hotkeyWindow: isHotkeyWindow,
     };
@@ -1791,7 +1791,7 @@ function buildMainControllerSource() {
     const windowOrder = Array.isArray(previous?.windowOrder) ? [...previous.windowOrder] : [];
     const controller = {
       active: true,
-      version: "1.7.0",
+      version: "1.7.1",
       controlledWindowIds,
       petWindowVisibility,
       threadWindowIds,

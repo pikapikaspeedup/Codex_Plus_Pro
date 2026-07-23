@@ -1014,6 +1014,21 @@
   background-clip: padding-box;
 }
 
+/*
+ * Native pet controls are rendered in separate composition documents. Codex
+ * gives their icons a translucent white foreground because it normally owns
+ * the material backdrop; keep them legible against Plus Pro's light surface.
+ */
+:root[data-codex-pokedex-theme="on"]
+  [data-avatar-overlay-hit-region="mascot-badge"] {
+  color: var(--color-token-text-secondary, rgb(48 35 30 / 0.72)) !important;
+}
+
+:root[data-codex-pokedex-theme="on"]
+  [data-avatar-overlay-chromium-overflow="true"] {
+  opacity: 1 !important;
+}
+
 @keyframes pokedex-breathe {
   0%, 100% { box-shadow: 0 3px 10px rgb(88 23 25 / 0.22), 0 0 0 0 rgb(238 187 61 / 0); }
   50% { box-shadow: 0 3px 12px rgb(88 23 25 / 0.3), 0 0 0 5px rgb(238 187 61 / 0.16); }

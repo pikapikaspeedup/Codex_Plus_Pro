@@ -400,7 +400,7 @@
 
     toolbar = document.createElement("div");
     toolbar.className = "codex-plus-pro-pet-notification-tools no-drag";
-    toolbar.setAttribute("data-avatar-overlay-chromium-overflow", "true");
+    toolbar.setAttribute("data-avatar-overlay-hit-region", "notification-tools");
     toolbar.setAttribute("role", "toolbar");
 
     const markReadButton = createToolbarButton(
