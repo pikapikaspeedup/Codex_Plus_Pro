@@ -1,0 +1,17 @@
+.DS_Store
+dist/
+work/
+design-qa.md
+
+# 本机打包产物和签名不进入源码仓库。
+Codex Plus Pro.app/
+打开原版 Codex.app/
+*.zip
+
+# 旧的本机预览截图可能包含任务名、项目名或账号显示名。
+/*.png
+
+# 本地日志与临时文件。
+*.log
+*.pid
+*.tmp

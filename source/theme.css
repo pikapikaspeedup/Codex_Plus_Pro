@@ -1,0 +1,1318 @@
+:root[data-codex-pokedex-theme="on"],
+:root[data-codex-pokedex-theme="on"].electron-light,
+:root[data-codex-pokedex-theme="on"].electron-dark {
+  color-scheme: light !important;
+  --color-token-main-surface-primary: rgb(255 250 239 / 0.86) !important;
+  --color-token-side-bar-background: var(--codex-plus-accent-dark, #8f1924) !important;
+  --color-token-foreground: #30231e !important;
+  --color-token-text-primary: #30231e !important;
+  --color-token-text-secondary: rgb(48 35 30 / 0.72) !important;
+  --color-token-text-tertiary: rgb(48 35 30 / 0.54) !important;
+  --color-token-description-foreground: rgb(48 35 30 / 0.58) !important;
+  --color-token-input-placeholder-foreground: rgb(74 55 44 / 0.48) !important;
+  --color-token-conversation-body: rgb(48 35 30 / 0.78) !important;
+  --color-token-conversation-header: rgb(48 35 30 / 0.46) !important;
+  --color-token-conversation-summary-leading: rgb(80 60 48 / 0.62) !important;
+  --color-token-conversation-summary-trailing: rgb(80 60 48 / 0.46) !important;
+  --color-token-input-background: rgb(255 252 244 / 0.88) !important;
+  --color-token-dropdown-background: rgb(255 252 244 / 0.92) !important;
+  --color-token-dropdown-foreground: #30231e !important;
+  --color-token-menu-background: rgb(255 252 244 / 0.96) !important;
+  --color-token-editor-background: rgb(255 252 244 / 0.9) !important;
+  --color-token-editor-foreground: #30231e !important;
+  --color-token-terminal-background: rgb(37 47 43 / 0.96) !important;
+  --color-token-terminal-foreground: #f5f0df !important;
+  --color-token-border: rgb(111 48 42 / 0.15) !important;
+  --color-token-border-light: rgb(111 48 42 / 0.09) !important;
+  --color-token-border-default: rgb(111 48 42 / 0.12) !important;
+  --color-token-border-heavy: rgb(111 48 42 / 0.2) !important;
+  --color-token-input-border: rgb(179 32 46 / 0.28) !important;
+  --color-token-list-hover-background: rgb(179 32 46 / 0.09) !important;
+  --color-token-list-active-selection-background: rgb(179 32 46 / 0.13) !important;
+  --color-token-toolbar-hover-background: rgb(179 32 46 / 0.09) !important;
+  --color-token-button-secondary-hover-background: rgb(179 32 46 / 0.1) !important;
+  --color-token-badge-background: rgb(238 189 58 / 0.17) !important;
+  --color-token-badge-foreground: #6f4910 !important;
+  --color-token-button-background: var(--codex-plus-accent, #b61f31) !important;
+  --color-token-button-foreground: #fff9ed !important;
+  --color-token-focus-border: var(--codex-plus-highlight, #d29a18) !important;
+  --color-token-list-focus-outline: var(--codex-plus-highlight, #d29a18) !important;
+  --color-token-text-link-foreground: var(--codex-plus-accent-dark, #a7192d) !important;
+  --color-token-text-link-active-foreground: var(--codex-plus-highlight, #d29a18) !important;
+  --color-token-charts-blue: #277d91 !important;
+  --color-token-charts-green: #3f8d5a !important;
+  --color-token-charts-yellow: #e8ad22 !important;
+  --color-token-charts-orange: #d86d2d !important;
+  --color-token-charts-red: #b61f31 !important;
+  --color-token-progress-bar-background: #e2aa27 !important;
+  --startup-background: #fff8e9 !important;
+  --codex-plus-accent: #b61f31;
+  --codex-plus-accent-dark: #751522;
+  --codex-plus-highlight: #d29a18;
+  --codex-plus-wallpaper-wash-start: 0.989;
+  --codex-plus-wallpaper-wash-mid: 0.957;
+  --codex-plus-wallpaper-wash-late: 0.82;
+  --codex-plus-wallpaper-wash-end: 0.647;
+  --codex-pokedex-wallpaper: url("__WALLPAPER_DATA_URI__");
+  --codex-pokedex-ball-logo: url("__POKEBALL_LOGO_DATA_URI__");
+  font-feature-settings: "ss01" 1, "cv05" 1;
+}
+
+:root[data-codex-pokedex-theme="on"] body,
+:root[data-codex-pokedex-theme="on"] #root {
+  background: #fff8e9 !important;
+}
+
+:root[data-codex-pokedex-theme="on"] body {
+  accent-color: var(--codex-plus-accent, #b61f31);
+}
+
+:root[data-codex-pokedex-theme="on"] .main-surface {
+  background-color: #fff8e9 !important;
+  background-image:
+    linear-gradient(90deg, rgb(255 250 239 / var(--codex-plus-wallpaper-wash-start, 0.985)) 0%, rgb(255 250 239 / var(--codex-plus-wallpaper-wash-mid, 0.94)) 42%, rgb(255 250 239 / var(--codex-plus-wallpaper-wash-late, 0.75)) 66%, rgb(255 250 239 / var(--codex-plus-wallpaper-wash-end, 0.51)) 100%),
+    linear-gradient(0deg, rgb(255 248 233 / 0.38), rgb(255 248 233 / 0.08)),
+    var(--codex-pokedex-wallpaper) !important;
+  background-position: center, center, center !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+}
+
+:root[data-codex-pokedex-theme="on"] .app-shell-main-content-viewport,
+:root[data-codex-pokedex-theme="on"] .thread-scroll-container,
+:root[data-codex-pokedex-theme="on"] .thread-scroll-container > div,
+:root[data-codex-pokedex-theme="on"] .main-surface > div:not(.app-header-tint) {
+  background-color: transparent !important;
+}
+
+:root[data-codex-pokedex-theme="on"] .app-header-tint {
+  background: linear-gradient(90deg, rgb(255 250 239 / 0.91), rgb(255 250 239 / 0.72)) !important;
+  border-bottom: 1px solid rgb(134 59 48 / 0.13);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.45);
+  -webkit-backdrop-filter: blur(18px) saturate(1.08);
+  backdrop-filter: blur(18px) saturate(1.08);
+}
+
+:root[data-codex-pokedex-theme="on"] .app-header-tint > div[class*="spacing-token-safe-header-left"] {
+  background:
+    radial-gradient(circle at 20% 0%, rgb(255 210 104 / 0.14), transparent 42%),
+    linear-gradient(155deg, var(--codex-plus-accent, #b92335), var(--codex-plus-accent-dark, #8e1826)) !important;
+}
+
+:root[data-codex-pokedex-theme="on"] .app-header-tint > div[class*="spacing-token-safe-header-left"] button {
+  --color-token-text-tertiary: rgb(255 247 232 / 0.72) !important;
+  --color-token-list-hover-background: rgb(255 247 232 / 0.14) !important;
+  color: rgb(255 247 232 / 0.72) !important;
+}
+
+:root[data-codex-pokedex-theme="on"] .app-shell-main-content-frame {
+  border-color: rgb(122 48 42 / 0.16) !important;
+}
+
+:root[data-codex-pokedex-theme="on"] .app-shell-left-panel {
+  --color-token-foreground: #fff7e8 !important;
+  --color-token-text-primary: #fff7e8 !important;
+  --color-token-text-secondary: rgb(255 247 232 / 0.76) !important;
+  --color-token-text-tertiary: rgb(255 247 232 / 0.58) !important;
+  --color-token-muted-foreground: rgb(255 247 232 / 0.54) !important;
+  --color-token-description-foreground: rgb(255 247 232 / 0.58) !important;
+  --color-token-input-placeholder-foreground: rgb(255 247 232 / 0.54) !important;
+  --color-token-border: rgb(255 247 232 / 0.13) !important;
+  --color-token-border-default: rgb(255 247 232 / 0.13) !important;
+  --color-token-border-heavy: rgb(255 247 232 / 0.2) !important;
+  --color-token-list-hover-background: rgb(255 247 232 / 0.12) !important;
+  --color-token-list-active-selection-background: rgb(255 247 232 / 0.17) !important;
+  --color-token-toolbar-hover-background: rgb(255 247 232 / 0.12) !important;
+  --color-token-button-secondary-hover-background: rgb(255 247 232 / 0.12) !important;
+  --color-token-focus-border: #f2c552 !important;
+  isolation: isolate;
+  color: #fff7e8 !important;
+  background:
+    radial-gradient(circle at 18% 12%, rgb(255 205 91 / 0.17), transparent 28%),
+    radial-gradient(circle at 78% 72%, rgb(74 12 26 / 0.38), transparent 48%),
+    linear-gradient(155deg, var(--codex-plus-accent, #b92335) 0%, var(--codex-plus-accent-dark, #8e1826) 58%, #302b2c 100%) !important;
+  border-right: 1px solid rgb(90 19 28 / 0.72);
+  box-shadow: 10px 0 34px rgb(72 21 21 / 0.14);
+}
+
+:root[data-codex-pokedex-theme="on"] .app-shell-left-panel::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 210px;
+  height: 210px;
+  right: -54px;
+  bottom: 34px;
+  background: var(--codex-pokedex-ball-logo) center / contain no-repeat;
+  opacity: 0.16;
+  filter: saturate(0) brightness(4.2);
+  pointer-events: none;
+}
+
+:root[data-codex-pokedex-theme="on"] .app-shell-left-panel::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background-image: radial-gradient(rgb(255 247 232 / 0.15) 0.7px, transparent 0.7px);
+  background-size: 10px 10px;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 4%, #000 36%, transparent 92%);
+  mask-image: linear-gradient(to bottom, transparent 4%, #000 36%, transparent 92%);
+  pointer-events: none;
+}
+
+:root[data-codex-pokedex-theme="on"] .app-shell-left-panel nav,
+:root[data-codex-pokedex-theme="on"] .app-shell-left-panel nav > div,
+:root[data-codex-pokedex-theme="on"] .app-shell-left-panel [class*="bg-token-side-bar"],
+:root[data-codex-pokedex-theme="on"] .app-shell-left-panel [class*="bg-token-main-surface"] {
+  background-color: transparent !important;
+}
+
+:root[data-codex-pokedex-theme="on"] .app-shell-left-panel nav.sidebar-foreground-muted {
+  --color-token-foreground: rgb(255 247 232 / 0.86) !important;
+  --color-token-text-primary: #fff7e8 !important;
+  --color-token-text-secondary: rgb(255 247 232 / 0.74) !important;
+  --color-token-text-tertiary: rgb(255 247 232 / 0.56) !important;
+  --color-token-description-foreground: rgb(255 247 232 / 0.58) !important;
+}
+
+:root[data-codex-pokedex-theme="on"] .app-shell-left-panel nav [class~="text-token-foreground"],
+:root[data-codex-pokedex-theme="on"] .app-shell-left-panel nav [class*="text-token-foreground/"],
+:root[data-codex-pokedex-theme="on"] .app-shell-left-panel nav [class*="!text-token-foreground"],
+:root[data-codex-pokedex-theme="on"] .app-shell-left-panel nav [class~="text-token-muted-foreground"],
+:root[data-codex-pokedex-theme="on"] .app-shell-left-panel nav [class~="text-token-description-foreground"] {
+  color: rgb(255 247 232 / 0.82) !important;
+}
+
+:root[data-codex-pokedex-theme="on"] .app-shell-left-panel button {
+  color: inherit;
+}
+
+:root[data-codex-pokedex-theme="on"] .app-shell-left-panel button:hover {
+  box-shadow: inset 0 0 0 1px rgb(255 247 232 / 0.06);
+}
+
+:root[data-codex-pokedex-theme="on"] .app-shell-left-panel button[aria-label^="Switch mode"]::before {
+  content: "";
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  margin-right: 1px;
+  background: var(--codex-pokedex-ball-logo) center / contain no-repeat;
+  filter: drop-shadow(0 1px 1px rgb(51 5 14 / 0.28));
+}
+
+/* New-task home: tagged by injector.mjs so this survives generated class-name changes. */
+:root[data-codex-pokedex-theme="on"] [data-codex-pokedex-home-panel="on"] {
+  isolation: isolate;
+  z-index: 0;
+}
+
+:root[data-codex-pokedex-theme="on"] [data-codex-pokedex-home-panel="on"]::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -26px -18px -166px;
+  border: 1px solid rgb(145 49 43 / 0.22);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 92% 8%, rgb(239 191 65 / 0.16), transparent 27%),
+    linear-gradient(145deg, rgb(255 254 247 / 0.82), rgb(255 246 226 / 0.67));
+  box-shadow:
+    0 24px 64px rgb(74 38 27 / 0.13),
+    inset 0 1px 0 rgb(255 255 255 / 0.88);
+  -webkit-backdrop-filter: blur(20px) saturate(1.08);
+  backdrop-filter: blur(20px) saturate(1.08);
+  pointer-events: none;
+}
+
+:root[data-codex-pokedex-theme="on"] [data-testid="home-icon"] {
+  width: 60px !important;
+  height: 60px !important;
+  opacity: 1 !important;
+  border-radius: 50%;
+  background: var(--codex-pokedex-ball-logo) center / contain no-repeat;
+  filter: drop-shadow(0 8px 14px rgb(88 23 25 / 0.2));
+}
+
+:root[data-codex-pokedex-theme="on"] [data-testid="home-icon"] svg {
+  opacity: 0 !important;
+}
+
+:root[data-codex-pokedex-theme="on"] [data-codex-pokedex-home-panel="on"] [data-feature="game-source"] {
+  position: relative;
+  color: #591820 !important;
+  font-weight: 720 !important;
+  letter-spacing: -0.018em;
+  text-shadow: 0 1px 0 rgb(255 255 255 / 0.8);
+}
+
+:root[data-codex-pokedex-theme="on"] [data-codex-pokedex-home-panel="on"] [data-feature="game-source"]::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -16px;
+  width: 68px;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #b61f31 0 42%, #f0c653 42% 58%, #b61f31 58% 100%);
+  box-shadow: 0 1px 3px rgb(88 23 25 / 0.14);
+  transform: translateX(-50%);
+}
+
+:root[data-codex-pokedex-theme="on"] [data-codex-pokedex-home-panel="on"] section[class~="group/home-suggestions"] button {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgb(145 49 43 / 0.22) !important;
+  background: linear-gradient(150deg, rgb(255 255 250 / 0.93), rgb(255 245 222 / 0.82)) !important;
+  box-shadow:
+    0 10px 24px rgb(82 42 31 / 0.1),
+    inset 0 1px 0 rgb(255 255 255 / 0.92) !important;
+  -webkit-backdrop-filter: blur(15px) saturate(1.08);
+  backdrop-filter: blur(15px) saturate(1.08);
+  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+:root[data-codex-pokedex-theme="on"] [data-codex-pokedex-home-panel="on"] section[class~="group/home-suggestions"] button::before {
+  content: "";
+  position: absolute;
+  width: 78px;
+  height: 78px;
+  right: -26px;
+  bottom: -30px;
+  border: 5px solid rgb(92 25 31 / 0.09);
+  border-radius: 50%;
+  background:
+    linear-gradient(to bottom, rgb(182 31 49 / 0.11) 0 45%, rgb(55 37 34 / 0.1) 45% 55%, rgb(255 255 255 / 0.34) 55% 100%);
+  pointer-events: none;
+}
+
+:root[data-codex-pokedex-theme="on"] [data-codex-pokedex-home-panel="on"] section[class~="group/home-suggestions"] button::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: linear-gradient(90deg, #b61f31, #d03b45 72%, #f0c653);
+  opacity: 0.88;
+  pointer-events: none;
+}
+
+:root[data-codex-pokedex-theme="on"] [data-codex-pokedex-home-panel="on"] section[class~="group/home-suggestions"] button > span:first-child > span:first-child {
+  width: 31px;
+  height: 31px;
+  justify-content: center;
+  border: 1px solid rgb(156 69 49 / 0.15);
+  border-radius: 50%;
+  background: rgb(255 249 232 / 0.9);
+  box-shadow: 0 4px 10px rgb(79 42 30 / 0.08);
+}
+
+:root[data-codex-pokedex-theme="on"] [data-codex-pokedex-home-panel="on"] section[class~="group/home-suggestions"] button:hover {
+  transform: translateY(-3px);
+  border-color: rgb(201 145 31 / 0.58) !important;
+  background: linear-gradient(150deg, rgb(255 255 252 / 0.97), rgb(255 239 205 / 0.9)) !important;
+  box-shadow:
+    0 15px 30px rgb(82 42 31 / 0.15),
+    0 0 0 1px rgb(239 192 77 / 0.12) !important;
+}
+
+:root[data-codex-pokedex-theme="on"] .app-shell-left-panel [class*="nav-section-title"] {
+  color: #f5ce72 !important;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+:root[data-codex-pokedex-theme="on"] .app-shell-left-panel .bg-token-list-hover-background {
+  background: linear-gradient(90deg, rgb(255 248 231 / 0.19), rgb(255 248 231 / 0.08)) !important;
+  box-shadow: inset 3px 0 0 #f3c956;
+}
+
+:root[data-codex-pokedex-theme="on"] .app-shell-left-panel svg {
+  filter: drop-shadow(0 1px 1px rgb(56 8 18 / 0.18));
+}
+
+:root[data-codex-pokedex-theme="on"] .composer-surface-chrome {
+  overflow: visible !important;
+  border: 1.5px solid color-mix(in srgb, var(--codex-plus-accent, #b61f31) 66%, transparent) !important;
+  border-radius: 22px !important;
+  background: linear-gradient(145deg, rgb(255 254 248 / 0.94), rgb(255 247 229 / 0.88)) !important;
+  box-shadow:
+    0 16px 48px rgb(91 37 27 / 0.16),
+    0 3px 10px rgb(91 37 27 / 0.08),
+    inset 0 1px 0 rgb(255 255 255 / 0.92) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(1.16);
+  backdrop-filter: blur(22px) saturate(1.16);
+}
+
+:root[data-codex-pokedex-theme="on"] .composer-surface-chrome::before {
+  content: "";
+  position: absolute;
+  left: 22px;
+  top: -5px;
+  width: 38px;
+  height: 8px;
+  border: 1px solid rgb(182 31 49 / 0.48);
+  border-bottom: 0;
+  border-radius: 10px 10px 0 0;
+  background: linear-gradient(90deg, #b61f31 0 44%, #2e2724 44% 56%, #fff8e9 56% 100%);
+  box-shadow: 0 -2px 8px rgb(91 37 27 / 0.07);
+}
+
+:root[data-codex-pokedex-theme="on"] .composer-surface-chrome [contenteditable="true"] {
+  caret-color: var(--codex-plus-accent, #b61f31);
+}
+
+/* Core settings stay available even when every optional enhancement is disabled. */
+[data-codex-plus-pro-settings-host="on"] > .codex-plus-pro-settings-button {
+  flex: 0 0 auto;
+  margin-left: auto !important;
+}
+
+[data-codex-plus-pro-settings-host="on"] button[aria-label="Search"] {
+  margin-left: 2px !important;
+}
+
+.codex-plus-pro-settings-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.codex-plus-pro-settings-button[aria-expanded="true"] {
+  color: #b61f31 !important;
+  background: rgb(182 31 49 / 0.1) !important;
+}
+
+.codex-plus-pro-settings-backdrop {
+  position: fixed;
+  z-index: 2147483645;
+  inset: 0;
+  background: rgb(24 18 16 / 0.28);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+
+.codex-plus-pro-settings-backdrop[hidden] {
+  display: none !important;
+}
+
+.codex-plus-pro-settings-popover {
+  position: fixed;
+  z-index: 2147483646;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  overflow: hidden;
+  width: min(780px, calc(100vw - 48px));
+  height: min(570px, calc(100vh - 48px));
+  color: var(--token-text-primary, #30231e);
+  border: 1px solid var(--token-border-light, rgb(74 52 45 / 0.16));
+  border-radius: 8px;
+  background: var(--token-main-surface-primary, #fffaf0);
+  box-shadow: 0 24px 72px rgb(39 27 23 / 0.28);
+  font-size: 13px;
+  line-height: 1.35;
+  letter-spacing: 0;
+  flex-direction: column;
+  transform: translate(-50%, -50%);
+}
+
+.codex-plus-pro-settings-popover[hidden] {
+  display: none !important;
+}
+
+.codex-plus-pro-settings-header {
+  display: flex;
+  flex: 0 0 72px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 22px 0 24px;
+  border-bottom: 1px solid var(--token-border-light, rgb(74 52 45 / 0.11));
+  background: rgb(255 253 247 / 0.82);
+}
+
+.codex-plus-pro-settings-title {
+  color: var(--token-text-primary, #30231e);
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.codex-plus-pro-settings-subtitle {
+  margin-top: 2px;
+  color: var(--token-text-secondary, rgb(48 35 30 / 0.58));
+  font-size: 12px;
+}
+
+.codex-plus-pro-settings-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  color: var(--token-text-secondary, rgb(48 35 30 / 0.64));
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  font: 24px/1 -apple-system, BlinkMacSystemFont, sans-serif;
+  cursor: pointer;
+}
+
+.codex-plus-pro-settings-close:hover {
+  color: var(--token-text-primary, #30231e);
+  background: rgb(48 35 30 / 0.07);
+}
+
+.codex-plus-pro-settings-body {
+  display: grid;
+  flex: 1 1 auto;
+  min-height: 0;
+  grid-template-columns: 174px minmax(0, 1fr);
+}
+
+.codex-plus-pro-settings-navigation {
+  display: flex;
+  min-width: 0;
+  padding: 18px 12px;
+  border-right: 1px solid var(--token-border-light, rgb(74 52 45 / 0.1));
+  background: rgb(77 58 49 / 0.035);
+  flex-direction: column;
+  gap: 4px;
+}
+
+.codex-plus-pro-settings-navigation-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 40px;
+  padding: 0 12px;
+  color: var(--token-text-secondary, rgb(48 35 30 / 0.66));
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  font: inherit;
+  font-weight: 580;
+  text-align: left;
+  cursor: pointer;
+}
+
+.codex-plus-pro-settings-navigation-item:hover {
+  color: var(--token-text-primary, #30231e);
+  background: rgb(48 35 30 / 0.055);
+}
+
+.codex-plus-pro-settings-navigation-item[aria-selected="true"] {
+  color: var(--codex-plus-accent-dark, #751522);
+  background: color-mix(in srgb, var(--codex-plus-accent, #b61f31) 10%, transparent);
+  box-shadow: inset 3px 0 0 var(--codex-plus-accent, #b61f31);
+}
+
+.codex-plus-pro-settings-status {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border: 1px solid rgb(48 35 30 / 0.22);
+  border-radius: 50%;
+  background: rgb(48 35 30 / 0.12);
+}
+
+.codex-plus-pro-settings-navigation-item[data-enabled="true"] .codex-plus-pro-settings-status {
+  border-color: var(--codex-plus-accent, #b61f31);
+  background: var(--codex-plus-accent, #b61f31);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--codex-plus-accent, #b61f31) 10%, transparent);
+}
+
+.codex-plus-pro-settings-content {
+  min-width: 0;
+  overflow: auto;
+  padding: 26px 30px 30px;
+}
+
+.codex-plus-pro-settings-section[hidden] {
+  display: none !important;
+}
+
+.codex-plus-pro-settings-section h2 {
+  margin: 0 0 16px;
+  color: var(--token-text-primary, #30231e);
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.codex-plus-pro-settings-row {
+  display: grid;
+  align-items: center;
+  gap: 20px;
+  min-height: 66px;
+  padding: 12px 0;
+  border-top: 1px solid var(--token-border-light, rgb(74 52 45 / 0.1));
+  grid-template-columns: 118px minmax(0, 1fr);
+}
+
+.codex-plus-pro-settings-label {
+  color: var(--token-text-secondary, rgb(48 35 30 / 0.64));
+  font-weight: 580;
+}
+
+.codex-plus-pro-settings-choices {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  padding: 2px;
+  border: 1px solid rgb(74 52 45 / 0.12);
+  border-radius: 6px;
+  background: rgb(74 52 45 / 0.045);
+  gap: 2px;
+}
+
+.codex-plus-pro-settings-choice {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 68px;
+  min-height: 32px;
+  padding: 0 11px;
+  color: var(--token-text-secondary, rgb(48 35 30 / 0.65));
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  font: inherit;
+  font-weight: 580;
+  letter-spacing: 0;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.codex-plus-pro-settings-choice:hover:not(:disabled) {
+  color: var(--token-text-primary, #30231e);
+  background: rgb(255 255 255 / 0.52);
+}
+
+.codex-plus-pro-settings-choice:focus-visible,
+.codex-plus-pro-settings-navigation-item:focus-visible,
+.codex-plus-pro-settings-close:focus-visible,
+.codex-plus-pro-settings-upload:focus-visible,
+.codex-plus-pro-settings-reset:focus-visible {
+  outline: 2px solid var(--codex-plus-highlight, #d29a18);
+  outline-offset: 2px;
+}
+
+.codex-plus-pro-settings-choice[data-selected="true"] {
+  color: #fffaf0;
+  border-color: var(--codex-plus-accent-dark, #751522);
+  background: var(--codex-plus-accent, #b61f31);
+  box-shadow: 0 2px 5px color-mix(in srgb, var(--codex-plus-accent-dark, #751522) 22%, transparent);
+}
+
+.codex-plus-pro-settings-choice:disabled {
+  cursor: not-allowed;
+  opacity: 0.36;
+}
+
+.codex-plus-pro-settings-color-choices {
+  flex-wrap: wrap;
+}
+
+.codex-plus-pro-settings-color-choice {
+  min-width: 96px;
+}
+
+.codex-plus-pro-settings-color-choice[data-selected="true"] {
+  color: var(--token-text-primary, #30231e);
+  border-color: color-mix(in srgb, var(--settings-choice-color) 68%, #30231e);
+  background: rgb(255 255 255 / 0.72);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--settings-choice-color) 20%, transparent);
+}
+
+.codex-plus-pro-settings-swatch {
+  width: 13px;
+  height: 13px;
+  flex: 0 0 13px;
+  border: 1px solid rgb(48 35 30 / 0.18);
+  border-radius: 50%;
+  background: var(--settings-choice-color);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.22);
+}
+
+.codex-plus-pro-settings-wallpaper-control {
+  display: grid;
+  align-items: center;
+  gap: 14px;
+  grid-template-columns: 132px minmax(0, 1fr);
+}
+
+.codex-plus-pro-settings-wallpaper-preview {
+  width: 132px;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid rgb(74 52 45 / 0.14);
+  border-radius: 6px;
+  background-color: #f2eadb;
+  background-image: var(--codex-pokedex-wallpaper);
+  background-position: center;
+  background-size: cover;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.35);
+}
+
+.codex-plus-pro-settings-wallpaper-actions {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.codex-plus-pro-settings-upload,
+.codex-plus-pro-settings-reset {
+  min-height: 30px;
+  padding: 0 10px;
+  color: var(--codex-plus-accent-dark, #751522);
+  border: 1px solid color-mix(in srgb, var(--codex-plus-accent, #b61f31) 25%, transparent);
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--codex-plus-accent, #b61f31) 7%, transparent);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.codex-plus-pro-settings-upload:hover,
+.codex-plus-pro-settings-reset:hover {
+  background: color-mix(in srgb, var(--codex-plus-accent, #b61f31) 12%, transparent);
+}
+
+.codex-plus-pro-settings-file-input {
+  display: none !important;
+}
+
+.codex-plus-pro-settings-wallpaper-status {
+  min-height: 16px;
+  color: var(--token-text-secondary, rgb(48 35 30 / 0.56));
+  font-size: 11px;
+}
+
+.codex-plus-pro-settings-range-control {
+  display: grid;
+  align-items: center;
+  gap: 12px;
+  grid-template-columns: minmax(180px, 1fr) 42px;
+}
+
+.codex-plus-pro-settings-range-control input[type="range"] {
+  width: 100%;
+  accent-color: var(--codex-plus-accent, #b61f31);
+}
+
+.codex-plus-pro-settings-range-control output {
+  color: var(--token-text-secondary, rgb(48 35 30 / 0.66));
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.codex-plus-pro-settings-footer {
+  display: flex;
+  flex: 0 0 50px;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 22px;
+  border-top: 1px solid var(--token-border-light, rgb(74 52 45 / 0.1));
+  background: rgb(255 253 247 / 0.72);
+}
+
+@media (max-width: 700px) {
+  .codex-plus-pro-settings-popover {
+    width: calc(100vw - 24px);
+    height: calc(100vh - 24px);
+  }
+
+  .codex-plus-pro-settings-body {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .codex-plus-pro-settings-navigation {
+    overflow-x: auto;
+    padding: 8px 10px;
+    border-right: 0;
+    border-bottom: 1px solid var(--token-border-light, rgb(74 52 45 / 0.1));
+    flex-direction: row;
+  }
+
+  .codex-plus-pro-settings-navigation-item {
+    width: auto;
+    min-width: 92px;
+  }
+
+  .codex-plus-pro-settings-content {
+    padding: 20px;
+  }
+
+  .codex-plus-pro-settings-row {
+    align-items: start;
+    grid-template-columns: 1fr;
+    gap: 9px;
+  }
+}
+
+/* Composer parameters stay visible while Codex's own state actions remain the source of truth. */
+:root[data-codex-plus-model-picker="on"] [data-codex-pokedex-flat-picker-surface="on"]
+  button[data-codex-intelligence-trigger="true"] {
+  position: absolute !important;
+  width: 1px !important;
+  min-width: 1px !important;
+  height: 1px !important;
+  min-height: 1px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+:root[data-codex-plus-model-picker="on"] .codex-pokedex-flat-picker {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  width: 100%;
+  min-height: 40px;
+  padding: 6px 10px 8px;
+  border-top: 1px solid rgb(111 48 42 / 0.11);
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: 0;
+  transition: opacity 120ms ease;
+}
+
+:root[data-codex-plus-model-picker="on"] .codex-pokedex-flat-picker-group {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+:root[data-codex-plus-model-picker="on"] .codex-pokedex-flat-picker-segments {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  padding: 2px;
+  border: 1px solid rgb(111 48 42 / 0.1);
+  border-radius: 6px;
+  background: rgb(96 62 49 / 0.055);
+}
+
+:root[data-codex-plus-model-picker="on"] .codex-pokedex-flat-picker-option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 24px;
+  min-width: 30px;
+  padding: 0 7px;
+  color: rgb(48 35 30 / 0.68);
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  box-shadow: none;
+  font: inherit;
+  font-weight: 560;
+  line-height: 22px;
+  letter-spacing: 0;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 110ms ease, background-color 110ms ease, border-color 110ms ease, box-shadow 110ms ease;
+}
+
+:root[data-codex-plus-model-picker="on"] .codex-pokedex-flat-picker-option:hover:not(:disabled) {
+  color: #4a2b25;
+  border-color: rgb(182 31 49 / 0.16);
+  background: rgb(182 31 49 / 0.08);
+}
+
+:root[data-codex-plus-model-picker="on"] .codex-pokedex-flat-picker-option:focus-visible {
+  outline: 2px solid var(--codex-plus-highlight, #d29a18);
+  outline-offset: 1px;
+}
+
+:root[data-codex-plus-model-picker="on"]
+  [data-flat-picker-group="model"] .codex-pokedex-flat-picker-option[data-selected="true"] {
+  color: #fff9ed;
+  border-color: var(--codex-plus-accent-dark, #a7192d);
+  background: var(--codex-plus-accent, #b61f31);
+  box-shadow: 0 2px 5px rgb(118 23 35 / 0.18);
+}
+
+:root[data-codex-plus-model-picker="on"]
+  [data-flat-picker-group="effort"] .codex-pokedex-flat-picker-option[data-selected="true"] {
+  color: #fff9ed;
+  border-color: #30231e;
+  background: #3b2a25;
+  box-shadow: 0 2px 5px rgb(48 35 30 / 0.16);
+}
+
+:root[data-codex-plus-model-picker="on"]
+  [data-flat-picker-group="speed"] .codex-pokedex-flat-picker-option {
+  min-width: 68px;
+}
+
+:root[data-codex-plus-model-picker="on"] .codex-pokedex-flat-picker-switch-track {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 24px;
+  height: 14px;
+  padding: 2px;
+  border-radius: 7px;
+  background: rgb(48 35 30 / 0.24);
+  transition: background-color 110ms ease;
+}
+
+:root[data-codex-plus-model-picker="on"] .codex-pokedex-flat-picker-switch-thumb {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background: #fffaf0;
+  box-shadow: 0 1px 2px rgb(48 35 30 / 0.24);
+  transform: translateX(0);
+  transition: transform 120ms ease;
+}
+
+:root[data-codex-plus-model-picker="on"]
+  [data-flat-picker-group="speed"] .codex-pokedex-flat-picker-option[data-selected="true"] {
+  color: #4f3710;
+  border-color: rgb(210 154 24 / 0.44);
+  background: rgb(240 198 83 / 0.42);
+}
+
+:root[data-codex-plus-model-picker="on"]
+  [data-flat-picker-group="speed"] .codex-pokedex-flat-picker-option[data-selected="true"]
+  .codex-pokedex-flat-picker-switch-track {
+  background: var(--codex-plus-accent, #b61f31);
+}
+
+:root[data-codex-plus-model-picker="on"]
+  [data-flat-picker-group="speed"] .codex-pokedex-flat-picker-option[data-selected="true"]
+  .codex-pokedex-flat-picker-switch-thumb {
+  transform: translateX(10px);
+}
+
+:root[data-codex-plus-model-picker="on"] .codex-pokedex-flat-picker-option:disabled {
+  cursor: not-allowed;
+}
+
+:root[data-codex-plus-model-picker="on"]
+  .codex-pokedex-flat-picker-option[data-unavailable="true"] {
+  text-decoration: line-through;
+  opacity: 0.34;
+}
+
+:root[data-codex-plus-model-picker="on"]
+  .codex-pokedex-flat-picker[data-flat-picker-disabled="on"] {
+  opacity: 0.48;
+}
+
+:root[data-codex-plus-model-picker="on"]
+  .codex-pokedex-flat-picker[data-flat-picker-working="on"] {
+  opacity: 0.62;
+}
+
+:root[data-codex-plus-model-picker="on"]
+  .codex-pokedex-flat-picker[data-flat-picker-error="on"] {
+  box-shadow: inset 0 0 0 1px rgb(182 31 49 / 0.42);
+}
+
+:root[data-codex-plus-model-picker="on"][data-codex-plus-model-density="comfortable"]
+  .codex-pokedex-flat-picker {
+  min-height: 46px;
+  padding-top: 8px;
+  padding-bottom: 10px;
+}
+
+:root[data-codex-plus-model-picker="on"][data-codex-plus-model-density="comfortable"]
+  .codex-pokedex-flat-picker-option {
+  height: 28px;
+  min-width: 34px;
+  padding-right: 9px;
+  padding-left: 9px;
+  line-height: 26px;
+}
+
+:root[data-codex-pokedex-theme="on"] .composer-surface-chrome button[aria-label="Stop"],
+:root[data-codex-pokedex-theme="on"] .composer-surface-chrome button[aria-label="Send"],
+:root[data-codex-pokedex-theme="on"] .composer-surface-chrome button[aria-label="Submit"] {
+  border: 2px solid #fff8e9 !important;
+  outline: 2px solid #3b2a25;
+  background: #b61f31 !important;
+  box-shadow: 0 3px 10px rgb(88 23 25 / 0.25);
+}
+
+:root[data-codex-pokedex-theme="on"] .composer-surface-chrome button[aria-label="Stop"] svg,
+:root[data-codex-pokedex-theme="on"] .composer-surface-chrome button[aria-label="Send"] svg,
+:root[data-codex-pokedex-theme="on"] .composer-surface-chrome button[aria-label="Submit"] svg {
+  color: #fff8e9 !important;
+}
+
+:root[data-codex-pokedex-theme="on"] .composer-surface-chrome button[aria-label="Stop"] {
+  animation: pokedex-breathe 1.75s ease-in-out infinite;
+}
+
+:root[data-codex-pokedex-theme="on"] .thread-scroll-container [class*="max-w-[77%]"][class*="rounded-2xl"] {
+  border: 1px solid rgb(182 31 49 / 0.14);
+  background: rgb(255 250 239 / 0.8) !important;
+  box-shadow: 0 7px 22px rgb(95 44 32 / 0.08);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+:root[data-codex-pokedex-theme="on"] .thread-scroll-container code:not(pre code),
+:root[data-codex-pokedex-theme="on"] .thread-scroll-container [class*="text-token-text-preformat"] {
+  border: 1px solid rgb(182 31 49 / 0.1);
+  background: rgb(255 247 228 / 0.84) !important;
+}
+
+:root[data-codex-pokedex-theme="on"] div[class*="rounded-3xl"][class*="bg-token-dropdown-background"] {
+  border: 1px solid rgb(151 62 49 / 0.15);
+  background: linear-gradient(155deg, rgb(255 254 248 / 0.94), rgb(255 247 229 / 0.88)) !important;
+  box-shadow: 0 18px 55px rgb(72 35 27 / 0.15) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(1.12);
+  backdrop-filter: blur(24px) saturate(1.12);
+}
+
+:root[data-codex-pokedex-theme="on"] div[class*="rounded-3xl"][class*="bg-token-dropdown-background"] header {
+  background: transparent !important;
+}
+
+:root[data-codex-pokedex-theme="on"] .bg-token-dropdown-background,
+:root[data-codex-pokedex-theme="on"] [class*="bg-token-input-background"] {
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+
+:root[data-codex-pokedex-theme="on"] ::selection {
+  color: #3a2721;
+  background: rgb(238 187 61 / 0.46);
+}
+
+:root[data-codex-pokedex-theme="on"] * {
+  scrollbar-color: rgb(182 31 49 / 0.28) transparent;
+}
+
+:root[data-codex-pokedex-theme="on"] *::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background: rgb(182 31 49 / 0.28);
+  background-clip: padding-box;
+}
+
+:root[data-codex-pokedex-theme="on"] *::-webkit-scrollbar-thumb:hover {
+  background: rgb(182 31 49 / 0.44);
+  background-clip: padding-box;
+}
+
+@keyframes pokedex-breathe {
+  0%, 100% { box-shadow: 0 3px 10px rgb(88 23 25 / 0.22), 0 0 0 0 rgb(238 187 61 / 0); }
+  50% { box-shadow: 0 3px 12px rgb(88 23 25 / 0.3), 0 0 0 5px rgb(238 187 61 / 0.16); }
+}
+
+/* Keep the task-working row active for as long as Codex reports Running. */
+@keyframes codex-pokedex-pet-running-v1 {
+  0% { background-position: 0% 87.5%; }
+  14.6341% { background-position: 14.2857% 87.5%; }
+  29.2682% { background-position: 28.5714% 87.5%; }
+  43.9024% { background-position: 42.8571% 87.5%; }
+  58.5365% { background-position: 57.1429% 87.5%; }
+  73.1707%, 100% { background-position: 71.4286% 87.5%; }
+}
+
+@keyframes codex-pokedex-pet-running-v2 {
+  0% { background-position: 0% 70%; }
+  14.6341% { background-position: 14.2857% 70%; }
+  29.2682% { background-position: 28.5714% 70%; }
+  43.9024% { background-position: 42.8571% 70%; }
+  58.5365% { background-position: 57.1429% 70%; }
+  73.1707%, 100% { background-position: 71.4286% 70%; }
+}
+
+/* Keep the success/review celebration visible while the completed card remains active. */
+@keyframes codex-pokedex-pet-review-v1 {
+  0% { background-position: 0% 100%; }
+  14.5631% { background-position: 14.2857% 100%; }
+  29.1262% { background-position: 28.5714% 100%; }
+  43.6893% { background-position: 42.8571% 100%; }
+  58.2524% { background-position: 57.1429% 100%; }
+  72.8155%, 100% { background-position: 71.4286% 100%; }
+}
+
+@keyframes codex-pokedex-pet-review-v2 {
+  0% { background-position: 0% 80%; }
+  14.5631% { background-position: 14.2857% 80%; }
+  29.1262% { background-position: 28.5714% 80%; }
+  43.6893% { background-position: 42.8571% 80%; }
+  58.2524% { background-position: 57.1429% 80%; }
+  72.8155%, 100% { background-position: 71.4286% 80%; }
+}
+
+.codex-plus-pro-pet-notification-tools {
+  position: fixed;
+  top: 8px;
+  left: 50%;
+  z-index: 2147483647;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  border: 1px solid color-mix(in srgb, var(--color-token-border-default, #8d8d8d) 55%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-token-bg-primary, #fff) 86%, transparent);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.16);
+  backdrop-filter: blur(16px);
+  pointer-events: auto;
+  transform: translateX(-50%);
+}
+
+.codex-plus-pro-pet-notification-tools[hidden] {
+  display: none !important;
+}
+
+.codex-plus-pro-pet-notification-tools button {
+  min-height: 26px;
+  padding: 3px 10px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-token-text-secondary, #5f6368);
+  font: 600 12px/18px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.codex-plus-pro-pet-notification-tools button:hover:not(:disabled),
+.codex-plus-pro-pet-notification-tools button:focus-visible {
+  background: color-mix(in srgb, var(--color-token-text-primary, #111) 10%, transparent);
+  color: var(--color-token-text-primary, #111);
+  outline: none;
+}
+
+.codex-plus-pro-pet-notification-tools button:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-token-border-focus, #2f6feb);
+}
+
+.codex-plus-pro-pet-notification-tools button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.codex-plus-pro-pet-notification-tools[data-status="error"] {
+  border-color: var(--color-token-error-foreground, #dc2626);
+}
+
+.codex-plus-pro-pet-notification-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+:root[data-codex-plus-pet="on"]
+  [data-testid="codex-avatar"][data-avatar-state="running"][style*="800% 900%"],
+:root[data-codex-plus-pet="on"][data-codex-pokedex-task-running="on"]
+  [data-testid="codex-avatar"][data-avatar-state="idle"][style*="800% 900%"] {
+  animation: codex-pokedex-pet-running-v1 820ms steps(1, end) infinite !important;
+}
+
+:root[data-codex-plus-pet="on"]
+  [data-testid="codex-avatar"][data-avatar-state="running"][style*="800% 1100%"],
+:root[data-codex-plus-pet="on"][data-codex-pokedex-task-running="on"]
+  [data-testid="codex-avatar"][data-avatar-state="idle"][style*="800% 1100%"] {
+  animation: codex-pokedex-pet-running-v2 820ms steps(1, end) infinite !important;
+}
+
+:root[data-codex-plus-pet="on"]
+  [data-testid="codex-avatar"][data-avatar-state="review"][style*="800% 900%"] {
+  animation: codex-pokedex-pet-review-v1 1030ms steps(1, end) infinite !important;
+}
+
+:root[data-codex-plus-pet="on"]
+  [data-testid="codex-avatar"][data-avatar-state="review"][style*="800% 1100%"] {
+  animation: codex-pokedex-pet-review-v2 1030ms steps(1, end) infinite !important;
+}
+
+:root[data-codex-plus-pet="on"][data-codex-plus-pet-motion="reduced"]
+  [data-testid="codex-avatar"]:is([data-avatar-state="running"], [data-avatar-state="review"]),
+:root[data-codex-plus-pet="on"][data-codex-plus-pet-motion="reduced"][data-codex-pokedex-task-running="on"]
+  [data-testid="codex-avatar"][data-avatar-state="idle"] {
+  animation: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-codex-pokedex-theme="on"] .composer-surface-chrome button[aria-label="Stop"] {
+    animation: none;
+  }
+
+  :root[data-codex-plus-pet="on"]
+    [data-testid="codex-avatar"]:is([data-avatar-state="running"], [data-avatar-state="review"]) {
+    animation: none !important;
+  }
+
+  :root[data-codex-plus-pet="on"][data-codex-pokedex-task-running="on"]
+    [data-testid="codex-avatar"][data-avatar-state="idle"] {
+    animation: none !important;
+  }
+}
+
+@media (max-width: 900px) {
+  :root[data-codex-pokedex-theme="on"] .main-surface {
+    background-image:
+      linear-gradient(90deg, rgb(255 250 239 / var(--codex-plus-wallpaper-wash-start, 0.985)), rgb(255 250 239 / var(--codex-plus-wallpaper-wash-late, 0.78))),
+      var(--codex-pokedex-wallpaper) !important;
+    background-position: center, 68% center !important;
+  }
+}
+
+/* Historical-task picture-in-picture entry point. */
+:root[data-codex-plus-pip="on"] [data-codex-pokedex-pip-actions="on"] {
+  width: 78px !important;
+}
+
+:root[data-codex-plus-pip="on"] .codex-pokedex-pip-row-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+:root[data-codex-plus-pip="on"] .codex-pokedex-pip-row-button[aria-busy="true"] svg {
+  animation: codex-pokedex-pip-spin 700ms linear infinite;
+}
+
+:root[data-codex-plus-pip="on"] .codex-pokedex-pip-row-button[data-codex-pokedex-pip-error="on"] {
+  color: #ffcf4a !important;
+}
+
+/* The Popout becomes a compact progress monitor until the pointer enters it. */
+:root[data-codex-plus-pip="on"][data-codex-pokedex-pip-window="thread"]
+  [data-codex-pokedex-pip-composer="on"] {
+  position: fixed !important;
+  z-index: 2147483600 !important;
+  right: 14px !important;
+  bottom: 14px !important;
+  left: 14px !important;
+  width: auto !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(calc(100% + 28px));
+  filter: drop-shadow(0 16px 30px rgb(66 29 24 / 0.2));
+  transition: opacity 150ms ease, transform 180ms ease;
+}
+
+:root[data-codex-plus-pip="on"][data-codex-pokedex-pip-window="thread"]
+  [data-codex-pokedex-pip-composer="on"] .composer-surface-chrome {
+  width: 100% !important;
+  max-width: none !important;
+  background: #fffaf0 !important;
+}
+
+:root[data-codex-plus-pip="on"][data-codex-pokedex-pip-window="thread"][data-codex-pokedex-pip-composer-open="on"]
+  [data-codex-pokedex-pip-composer="on"],
+:root[data-codex-plus-pip="on"][data-codex-pokedex-pip-window="thread"]
+  [data-codex-pokedex-pip-composer="on"]:focus-within {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+:root[data-codex-plus-pip="on"] .codex-pokedex-pip-composer-handle,
+:root[data-codex-plus-pip="on"] .codex-pokedex-pip-stop-proxy {
+  position: fixed;
+  z-index: 2147483640;
+  right: 12px;
+  bottom: 12px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  color: #3b2a25;
+  border: 1px solid rgb(120 53 44 / 0.24);
+  border-radius: 8px;
+  background: rgb(255 251 241 / 0.94);
+  box-shadow: 0 8px 24px rgb(67 30 24 / 0.16);
+  -webkit-backdrop-filter: blur(18px) saturate(1.08);
+  backdrop-filter: blur(18px) saturate(1.08);
+  transition: opacity 120ms ease, transform 150ms ease, background-color 120ms ease;
+}
+
+:root[data-codex-plus-pip="on"] .codex-pokedex-pip-composer-handle:hover {
+  color: #fff8e9;
+  border-color: #b61f31;
+  background: #b61f31;
+}
+
+:root[data-codex-plus-pip="on"] .codex-pokedex-pip-pin-toggle:hover,
+:root[data-codex-plus-pip="on"] .codex-pokedex-pip-pin-toggle[aria-pressed="true"] {
+  color: #b61f31 !important;
+  background: rgb(182 31 49 / 0.1) !important;
+}
+
+:root[data-codex-plus-pip="on"] .codex-pokedex-pip-pin-toggle svg {
+  width: 18px;
+  height: 18px;
+}
+
+:root[data-codex-plus-pip="on"] .codex-pokedex-pip-composer-handle svg,
+:root[data-codex-plus-pip="on"] .codex-pokedex-pip-stop-proxy svg {
+  width: 18px;
+  height: 18px;
+}
+
+:root[data-codex-plus-pip="on"][data-codex-pokedex-pip-window="thread"]
+  .codex-pokedex-pip-composer-handle {
+  display: flex;
+}
+
+:root[data-codex-plus-pip="on"][data-codex-pokedex-pip-window="thread"][data-codex-pokedex-task-running="on"]
+  .codex-pokedex-pip-composer-handle {
+  right: 60px;
+}
+
+:root[data-codex-plus-pip="on"][data-codex-pokedex-pip-window="thread"][data-codex-pokedex-task-running="on"]
+  .codex-pokedex-pip-stop-proxy {
+  display: flex;
+  color: #fff8e9;
+  border-color: #fff8e9;
+  outline: 2px solid #3b2a25;
+  background: #b61f31;
+}
+
+:root[data-codex-plus-pip="on"][data-codex-pokedex-pip-window="thread"][data-codex-pokedex-pip-composer-open="on"]
+  :is(.codex-pokedex-pip-composer-handle, .codex-pokedex-pip-stop-proxy) {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+}
+
+@keyframes codex-pokedex-pip-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-codex-plus-pip="on"] .codex-pokedex-pip-row-button[aria-busy="true"] svg {
+    animation: none;
+  }
+
+  :root[data-codex-plus-pip="on"][data-codex-pokedex-pip-window="thread"]
+    [data-codex-pokedex-pip-composer="on"],
+  :root[data-codex-plus-pip="on"]
+    :is(.codex-pokedex-pip-composer-handle, .codex-pokedex-pip-stop-proxy) {
+    transition: none;
+  }
+}
