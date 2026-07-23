@@ -1,4 +1,4 @@
-# Codex Plus Pro 1.7.1
+# Codex Plus Pro 1.7.2
 
 `Codex Plus Pro.app` 是一套用于 macOS Codex / ChatGPT 桌面版的非官方本地增强：宝可梦训练家主题、桌面宠物通知管理、模型参数平铺，以及任意历史任务的置顶画中画监控。
 
@@ -46,7 +46,7 @@ cd Codex_Plus_Pro
 dist/
 ├── Codex Plus Pro.app
 ├── 打开原版 Codex.app
-└── Codex-Plus-Pro-1.7.1-macOS.zip
+└── Codex-Plus-Pro-1.7.2-macOS.zip
 ```
 
 如需指定输出目录：

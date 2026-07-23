@@ -325,7 +325,7 @@ function buildInjectionSource(css) {
     const FLAT_PICKER_SURFACE_ATTRIBUTE = "data-codex-pokedex-flat-picker-surface";
     const FLAT_PICKER_FALLBACK_ATTRIBUTE = "data-codex-pokedex-flat-picker-fallback";
     const FLAT_PICKER_FAILURE_ATTRIBUTE = "data-codex-pokedex-flat-picker-failures";
-    const FLAT_PICKER_VERSION = "1.7.1";
+    const FLAT_PICKER_VERSION = "1.7.2";
     const ACTIVITY_CHANNEL_NAME = "codex-pokedex-pet-activity-v1";
     const SETTINGS_STORAGE_KEY = "codex-plus-pro-settings-v1";
     const CUSTOM_WALLPAPER_STORAGE_KEY = "codex-plus-pro-wallpaper-v1";
@@ -974,6 +974,7 @@ function buildInjectionSource(css) {
         });
         const modulePaths = Array.from(entrySource.matchAll(/["'](\\.\\/[^"']+\\.js)["']/g), (match) => match[1]);
         const likelyPaths = [...new Set(modulePaths.filter((modulePath) =>
+          modulePath.toLowerCase().includes("app-initial") ||
           modulePath.includes("app-initial~avatarOverlayCompositionSurface~artifact-tab-content.electron~notebook-preview-~") ||
           modulePath.toLowerCase().includes("hotkey-window")
         ))];
@@ -1755,7 +1756,7 @@ function buildInjectionSource(css) {
     window.__codexPlusProRuntimeCleanup = cleanupRuntime;
     return {
       active: true,
-      version: "1.7.1",
+      version: "1.7.2",
       avatarOverlay: isAvatarOverlay,
       hotkeyWindow: isHotkeyWindow,
     };
@@ -1791,7 +1792,7 @@ function buildMainControllerSource() {
     const windowOrder = Array.isArray(previous?.windowOrder) ? [...previous.windowOrder] : [];
     const controller = {
       active: true,
-      version: "1.7.1",
+      version: "1.7.2",
       controlledWindowIds,
       petWindowVisibility,
       threadWindowIds,
@@ -2017,14 +2018,21 @@ function buildMainControllerSource() {
       const pending = controller.pendingOpen;
       if (!pending || pending.threadId !== threadId) throw new Error("Popout window preparation was lost");
       restorePendingOverride();
-      const entries = await collectThreadWindows();
       const beforeIds = new Set(pending.beforeWindowIds);
-      const newEntries = entries.filter((entry) => !beforeIds.has(entry.window.id));
-      let selected = newEntries.find((entry) => entry.threadId === threadId) || newEntries[0];
-      if (!selected) selected = entries.find((entry) => entry.threadId === threadId);
-      if (!selected && !pending.forceNewWindow) {
-        selected = entries.find((entry) => entry.window.id === controller.officialThreadWindowId)
-          || entries.sort((left, right) => right.window.id - left.window.id)[0];
+      const readyDeadline = Date.now() + 6000;
+      let entries = [];
+      let newEntries = [];
+      let selected = null;
+      while (!selected && Date.now() < readyDeadline) {
+        entries = await collectThreadWindows();
+        newEntries = entries.filter((entry) => !beforeIds.has(entry.window.id));
+        selected = newEntries.find((entry) => entry.threadId === threadId) || newEntries[0];
+        if (!selected) selected = entries.find((entry) => entry.threadId === threadId);
+        if (!selected && !pending.forceNewWindow) {
+          selected = entries.find((entry) => entry.window.id === controller.officialThreadWindowId)
+            || entries.toSorted((left, right) => right.window.id - left.window.id)[0];
+        }
+        if (!selected) await new Promise((resolve) => setTimeout(resolve, 80));
       }
       if (!selected) {
         controller.pendingOpen = null;
