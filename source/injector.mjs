@@ -189,6 +189,10 @@ async function attachToMainTarget(target) {
   mainConnection = cdp;
 
   await cdp.send("Runtime.enable");
+  const appWindowServicesAvailable = await exposeAppWindowServices(cdp).catch((error) => {
+    log(`Codex Plus Pro could not discover registered app windows: ${error.message}`);
+    return false;
+  });
   const result = await cdp.send("Runtime.evaluate", {
     expression: mainControllerSource,
     awaitPromise: true,
@@ -202,7 +206,75 @@ async function attachToMainTarget(target) {
   }
 
   await syncMainFeatureSettings();
+  if (appWindowServicesAvailable) log("Codex Plus Pro registered app window service active");
   log("Codex Plus Pro window controller active");
+}
+
+async function exposeAppWindowServices(cdp) {
+  const objectGroup = `codex-plus-pro-window-services-${Date.now()}`;
+  try {
+    const listenersResult = await cdp.send("Runtime.evaluate", {
+      expression: `process.mainModule?.require?.("electron")?.app?.listeners?.("browser-window-focus") || []`,
+      objectGroup,
+    });
+    const listenersId = listenersResult.result?.objectId;
+    if (!listenersId) return false;
+
+    const listeners = await cdp.send("Runtime.getProperties", {
+      objectId: listenersId,
+      ownProperties: true,
+    });
+    const functions = (listeners.result || [])
+      .map((property) => property.value)
+      .filter((value) => value?.type === "function" && value.objectId);
+
+    for (const listener of functions) {
+      const listenerProperties = await cdp.send("Runtime.getProperties", {
+        objectId: listener.objectId,
+      });
+      const scopesId = listenerProperties.internalProperties
+        ?.find((property) => property.name === "[[Scopes]]")
+        ?.value?.objectId;
+      if (!scopesId) continue;
+
+      const scopes = await cdp.send("Runtime.getProperties", {
+        objectId: scopesId,
+        ownProperties: true,
+      });
+      for (const scope of scopes.result || []) {
+        const scopeId = scope.value?.objectId;
+        if (!scopeId || !String(scope.value?.description || "").startsWith("Closure")) continue;
+        const bindings = await cdp.send("Runtime.getProperties", {
+          objectId: scopeId,
+          ownProperties: true,
+        });
+        for (const binding of bindings.result || []) {
+          const candidateId = binding.value?.objectId;
+          if (!candidateId || binding.value?.type !== "object") continue;
+          const candidate = await cdp.send("Runtime.getProperties", {
+            objectId: candidateId,
+            ownProperties: true,
+          });
+          const names = new Set((candidate.result || []).map((property) => property.name));
+          if (!names.has("createFreshWindow") || !names.has("windowManager") || !names.has("getPrimaryWindow")) {
+            continue;
+          }
+          const exposed = await cdp.send("Runtime.callFunctionOn", {
+            objectId: candidateId,
+            functionDeclaration: `function () {
+              globalThis.__codexPlusProAppWindowServices = this;
+              return true;
+            }`,
+            returnByValue: true,
+          });
+          return exposed.result?.value === true;
+        }
+      }
+    }
+    return false;
+  } finally {
+    await cdp.send("Runtime.releaseObjectGroup", { objectGroup }).catch(() => {});
+  }
 }
 
 function normalizeFeatureSettings(value) {
@@ -261,29 +333,35 @@ async function handleMultiPipRequest(cdp, rawPayload) {
     requestId = String(request?.requestId || "");
     const action = String(request?.action || "");
     const threadId = String(request?.threadId || "");
+    const targetKind = request?.target?.kind === "chatgpt" ? "chatgpt" : "codex";
+    const targetThreadId = String(request?.target?.threadId || threadId);
     if (!requestId) throw new Error("Picture-in-picture request is missing an id");
 
     if (action === "open-thread") {
-      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(threadId)) {
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetThreadId)) {
         throw new Error("Invalid task id");
       }
-      const preparation = await evaluateMainController("beginOpenThread", threadId);
-      if (preparation?.reused) {
-        response = { ok: true, ...preparation };
+      if (targetKind === "chatgpt") {
+        response = { ok: true, ...await evaluateMainController("openChatThread", targetThreadId) };
       } else {
-        try {
-          const openResult = await cdp.send("Runtime.evaluate", {
-            expression: `globalThis.__codexPlusProOpenOfficialPip?.(${JSON.stringify(threadId)})`,
-            awaitPromise: true,
-            returnByValue: true,
-          });
-          if (openResult.exceptionDetails) {
-            throw new Error(openResult.exceptionDetails.exception?.description ?? openResult.exceptionDetails.text ?? "Official Popout service failed");
+        const preparation = await evaluateMainController("beginOpenThread", targetThreadId);
+        if (preparation?.reused) {
+          response = { ok: true, ...preparation };
+        } else {
+          try {
+            const openResult = await cdp.send("Runtime.evaluate", {
+              expression: `globalThis.__codexPlusProOpenOfficialPip?.(${JSON.stringify(targetThreadId)})`,
+              awaitPromise: true,
+              returnByValue: true,
+            });
+            if (openResult.exceptionDetails) {
+              throw new Error(openResult.exceptionDetails.exception?.description ?? openResult.exceptionDetails.text ?? "Official Popout service failed");
+            }
+            response = { ok: true, ...await evaluateMainController("finishOpenThread", targetThreadId) };
+          } catch (error) {
+            await evaluateMainController("abortOpenThread").catch(() => {});
+            throw error;
           }
-          response = { ok: true, ...await evaluateMainController("finishOpenThread", threadId) };
-        } catch (error) {
-          await evaluateMainController("abortOpenThread").catch(() => {});
-          throw error;
         }
       }
     } else if (action === "close-current") {
@@ -318,6 +396,7 @@ function buildInjectionSource(css) {
     const HOME_PANEL_ATTRIBUTE = "data-codex-pokedex-home-panel";
     const TASK_RUNNING_ATTRIBUTE = "data-codex-pokedex-task-running";
     const PIP_WINDOW_ATTRIBUTE = "data-codex-pokedex-pip-window";
+    const PIP_KIND_ATTRIBUTE = "data-codex-pokedex-pip-kind";
     const PIP_COMPOSER_ATTRIBUTE = "data-codex-pokedex-pip-composer";
     const PIP_COMPOSER_OPEN_ATTRIBUTE = "data-codex-pokedex-pip-composer-open";
     const PIP_THREAD_ID_ATTRIBUTE = "data-codex-plus-pip-thread-id";
@@ -364,13 +443,14 @@ function buildInjectionSource(css) {
     document.querySelector(".codex-plus-pro-settings-button")?.remove();
     document.querySelector(".codex-plus-pro-settings-popover")?.remove();
     document.querySelector(".codex-plus-pro-settings-backdrop")?.remove();
-    for (const element of document.querySelectorAll(".codex-pokedex-flat-picker, .codex-pokedex-pip-row-button, .codex-pokedex-pip-composer-handle, .codex-pokedex-pip-stop-proxy, .codex-pokedex-pip-pin-toggle")) {
+    for (const element of document.querySelectorAll(".codex-pokedex-flat-picker, .codex-pokedex-pip-row-button, .codex-pokedex-pip-composer-handle, .codex-pokedex-pip-stop-proxy, .codex-pokedex-pip-pin-toggle, .codex-pokedex-chat-pip-actions")) {
       element.remove();
     }
     const PIP_ICON = '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 9V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4"/><rect width="10" height="7" x="12" y="13" rx="2"/></svg>';
     const MESSAGE_ICON = '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>';
     const STOP_ICON = '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="12" height="12" x="6" y="6" rx="1"/></svg>';
     const PIN_ICON = '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M5 17h14"/><path d="M6 17v-5l2-2V5h8v5l2 2v5"/></svg>';
+    const CLOSE_ICON = '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
     const SETTINGS_ICON = '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="4" y1="21" y2="14"/><line x1="4" x2="4" y1="10" y2="3"/><line x1="12" x2="12" y1="21" y2="12"/><line x1="12" x2="12" y1="8" y2="3"/><line x1="20" x2="20" y1="21" y2="16"/><line x1="20" x2="20" y1="12" y2="3"/><line x1="1" x2="7" y1="14" y2="14"/><line x1="9" x2="15" y1="8" y2="8"/><line x1="17" x2="23" y1="16" y2="16"/></svg>';
     const DEFAULT_MODEL_OPTIONS = ["5.6 Sol", "5.6 Terra", "5.6 Luna", "5.5", "5.3 Codex Spark"];
     const DEFAULT_EFFORT_OPTIONS = ["Light", "Medium", "High", "Extra High", "Max", "Ultra"];
@@ -476,6 +556,8 @@ function buildInjectionSource(css) {
     let pipWindowPinned = null;
     let nextPipRequestId = 1;
     const pendingPipRequests = new Map();
+    const isManagedPipWindow = () => isHotkeyWindow || Boolean(pipThreadId);
+    const isChatPipWindow = () => pipThreadId.startsWith("chatgpt:");
 
     const resolveMultiPipRequest = (requestId, response) => {
       const pending = pendingPipRequests.get(String(requestId));
@@ -487,11 +569,14 @@ function buildInjectionSource(css) {
     };
     window.__codexPlusProResolveMultiPipRequest = resolveMultiPipRequest;
 
-    const requestMultiPip = (action, threadId = pipThreadId) => new Promise((resolve, reject) => {
+    const requestMultiPip = (action, target = pipThreadId) => new Promise((resolve, reject) => {
       if (typeof window[MULTI_PIP_BINDING] !== "function") {
         reject(new Error("Codex Plus Pro 多窗口控制器尚未连接"));
         return;
       }
+      const threadId = typeof target === "object"
+        ? String(target?.threadId || "")
+        : String(target || "");
       const requestId = Date.now().toString(36) + "-" + (nextPipRequestId++).toString(36);
       const timer = window.setTimeout(() => {
         pendingPipRequests.delete(requestId);
@@ -499,7 +584,12 @@ function buildInjectionSource(css) {
       }, 15000);
       pendingPipRequests.set(requestId, { resolve, reject, timer });
       try {
-        window[MULTI_PIP_BINDING](JSON.stringify({ requestId, action, threadId }));
+        window[MULTI_PIP_BINDING](JSON.stringify({
+          requestId,
+          action,
+          threadId,
+          ...(typeof target === "object" ? { target } : {}),
+        }));
       } catch (error) {
         window.clearTimeout(timer);
         pendingPipRequests.delete(requestId);
@@ -524,6 +614,15 @@ function buildInjectionSource(css) {
         pinToggle.setAttribute("aria-label", pinned ? "Disable always on top" : "Keep window on top");
         pinToggle.title = pinned ? "取消置顶" : "窗口置顶";
       }
+      window.setTimeout(() => {
+        if (!isManagedPipWindow()) return;
+        document.querySelector(".codex-plus-pro-settings-button")?.remove();
+        document.querySelector(".codex-plus-pro-settings-popover")?.remove();
+        document.querySelector(".codex-plus-pro-settings-backdrop")?.remove();
+        removeSidebarPipEnhancements();
+        removeFlatPicker();
+        decoratePipWindow();
+      }, 0);
       return { threadId: pipThreadId, pinned: pipWindowPinned };
     };
     window.__codexPlusProSetPipWindowState = setPipWindowState;
@@ -847,7 +946,7 @@ function buildInjectionSource(css) {
     };
 
     const decorateSettingsButton = () => {
-      if (isAvatarOverlay || isHotkeyWindow) return;
+      if (isAvatarOverlay || isManagedPipWindow()) return;
       const searchButton = document.querySelector('button[aria-label="Search"]');
       const searchWrapper = searchButton?.parentElement;
       const host = searchWrapper?.parentElement;
@@ -916,6 +1015,30 @@ function buildInjectionSource(css) {
       const rawId = row.getAttribute("data-app-action-sidebar-thread-id") || "";
       if (rawId.includes("client-new-thread:")) return null;
       return rawId.match(/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i)?.[1] || null;
+    };
+
+    const extractChatPipTarget = (row) => {
+      const fiberKey = Object.keys(row).find((key) => key.startsWith("__reactFiber$"));
+      let fiber = fiberKey ? row[fiberKey] : null;
+      let threadId = "";
+      for (let depth = 0; fiber && depth < 20 && !threadId; depth += 1, fiber = fiber.return) {
+        for (const props of [fiber.memoizedProps, fiber.pendingProps]) {
+          if (!props || typeof props !== "object") continue;
+          const conversationId = typeof props.conversationId === "string"
+            ? props.conversationId
+            : "";
+          if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(conversationId)) {
+            threadId = conversationId;
+            break;
+          }
+        }
+      }
+      if (!threadId) return null;
+      return {
+        kind: "chatgpt",
+        threadId,
+        title: row.querySelector('[data-thread-title="true"]')?.textContent?.trim() || "",
+      };
     };
 
     const findActionBar = (row) => {
@@ -1007,8 +1130,8 @@ function buildInjectionSource(css) {
     };
     window.__codexPlusProOpenOfficialPip = openOfficialPip;
 
-    const openThreadInPip = async (threadId) => {
-      await requestMultiPip("open-thread", threadId);
+    const openThreadInPip = async (target) => {
+      await requestMultiPip("open-thread", target);
     };
 
     const removeSidebarPipEnhancements = () => {
@@ -1019,7 +1142,7 @@ function buildInjectionSource(css) {
     };
 
     const decorateSidebarRows = () => {
-      if (isAvatarOverlay || isHotkeyWindow || !featureSettings.pip) return;
+      if (isAvatarOverlay || isManagedPipWindow() || !featureSettings.pip) return;
       for (const row of document.querySelectorAll("[data-app-action-sidebar-thread-row]")) {
         const threadId = extractPersistedThreadId(row);
         if (!threadId || row.querySelector(":scope .codex-pokedex-pip-row-button")) continue;
@@ -1044,9 +1167,58 @@ function buildInjectionSource(css) {
           if (button.getAttribute("aria-busy") === "true") return;
           button.setAttribute("aria-busy", "true");
           try {
-            await openThreadInPip(threadId);
+            await openThreadInPip({ kind: "codex", threadId });
           } catch (error) {
             console.error("Codex Plus Pro could not open the task in picture-in-picture", error);
+            button.setAttribute("data-codex-pokedex-pip-error", "on");
+            button.title = "画中画打开失败，请重新启动 Codex Plus Pro";
+            window.setTimeout(() => button.removeAttribute("data-codex-pokedex-pip-error"), 1800);
+          } finally {
+            button.removeAttribute("aria-busy");
+          }
+        });
+        actionBar.setAttribute("data-codex-pokedex-pip-actions", "on");
+        actionBar.insertBefore(button, actionBar.firstChild);
+      }
+
+      for (const titleElement of document.querySelectorAll('[data-thread-title="true"]')) {
+        const row = titleElement.closest('[role="button"]');
+        if (
+          !row ||
+          row.hasAttribute("data-app-action-sidebar-thread-row") ||
+          row.querySelector(":scope .codex-pokedex-pip-row-button")
+        ) continue;
+        const hasChatActions = Array.from(row.querySelectorAll("button")).some((candidate) => {
+          const label = (candidate.getAttribute("aria-label") || "").toLowerCase();
+          return label === "archive chat" || label === "pin chat" || label === "unpin chat";
+        });
+        if (!hasChatActions) continue;
+
+        const target = extractChatPipTarget(row);
+        if (!target) continue;
+        const actionElements = findActionBar(row);
+        if (!actionElements) continue;
+        const { actionBar, reference } = actionElements;
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = reference.className;
+        button.classList.add("codex-pokedex-pip-row-button");
+        button.setAttribute("aria-label", "Open in picture-in-picture");
+        button.title = "画中画监控";
+        button.innerHTML = PIP_ICON;
+        button.addEventListener("pointerdown", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        });
+        button.addEventListener("click", async (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          if (button.getAttribute("aria-busy") === "true") return;
+          button.setAttribute("aria-busy", "true");
+          try {
+            await openThreadInPip(target);
+          } catch (error) {
+            console.error("Codex Plus Pro could not open the Chat task in picture-in-picture", error);
             button.setAttribute("data-codex-pokedex-pip-error", "on");
             button.title = "画中画打开失败，请重新启动 Codex Plus Pro";
             window.setTimeout(() => button.removeAttribute("data-codex-pokedex-pip-error"), 1800);
@@ -1375,7 +1547,7 @@ function buildInjectionSource(css) {
     };
 
     const decorateFlatPicker = () => {
-      if (isAvatarOverlay || isHotkeyWindow || !featureSettings.modelPicker) return;
+      if (isAvatarOverlay || isManagedPipWindow() || !featureSettings.modelPicker) return;
       for (const trigger of document.querySelectorAll('button[data-codex-intelligence-trigger="true"]')) {
         const surface = trigger.closest(".composer-surface-chrome");
         if (!surface) continue;
@@ -1414,7 +1586,11 @@ function buildInjectionSource(css) {
       window.clearTimeout(pipCloseTimer);
       root.setAttribute(PIP_COMPOSER_OPEN_ATTRIBUTE, "on");
       if (focusComposer) {
-        window.setTimeout(() => document.querySelector('[data-codex-composer="true"]')?.focus(), 80);
+        window.setTimeout(() => {
+          document.querySelector(
+            '[data-codex-composer="true"], form[data-thread-find-composer="true"] [contenteditable="true"], [contenteditable="true"][aria-label="Message ChatGPT"]'
+          )?.focus();
+        }, 80);
       }
     };
 
@@ -1494,9 +1670,95 @@ function buildInjectionSource(css) {
       }
     };
 
+    const ensureChatPipControls = () => {
+      if (!featureSettings.pip || !document.body) return;
+      const header = document.querySelector("header.app-header-tint");
+      const titleGrid = header
+        ?.querySelector('[data-testid="app-shell-header-context-menu-surface"] .grid');
+      const titleActions = titleGrid?.lastElementChild;
+      if (!titleActions) return;
+
+      let actions = document.querySelector(".codex-pokedex-chat-pip-actions");
+      if (!actions) {
+        actions = document.createElement("div");
+        actions.className = "codex-pokedex-chat-pip-actions";
+
+        const pinToggle = document.createElement("button");
+        pinToggle.type = "button";
+        pinToggle.className = "codex-pokedex-pip-pin-toggle";
+        pinToggle.innerHTML = PIN_ICON;
+        pinToggle.addEventListener("click", async (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          if (pinToggle.getAttribute("aria-busy") === "true") return;
+          pinToggle.setAttribute("aria-busy", "true");
+          try {
+            setPipWindowState(await requestMultiPip("toggle-pin-current"));
+          } catch (error) {
+            console.error("Codex Plus Pro could not change this window's pin state", error);
+          } finally {
+            pinToggle.removeAttribute("aria-busy");
+          }
+        });
+
+        const closeButton = document.createElement("button");
+        closeButton.type = "button";
+        closeButton.className = "codex-pokedex-chat-pip-close";
+        closeButton.setAttribute("aria-label", "Close picture-in-picture");
+        closeButton.title = "关闭画中画";
+        closeButton.innerHTML = CLOSE_ICON;
+        closeButton.addEventListener("click", async (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          if (closeButton.getAttribute("aria-busy") === "true") return;
+          closeButton.setAttribute("aria-busy", "true");
+          try {
+            await requestMultiPip("close-current");
+          } catch (error) {
+            closeButton.removeAttribute("aria-busy");
+            console.error("Codex Plus Pro could not close this Chat window", error);
+          }
+        });
+
+        actions.append(pinToggle, closeButton);
+      }
+      if (actions.parentElement !== titleActions) titleActions.appendChild(actions);
+
+      const pinToggle = actions.querySelector(".codex-pokedex-pip-pin-toggle");
+      if (pinToggle) {
+        const pinned = pipWindowPinned ?? featureSettings.pipAlwaysOnTop;
+        pinToggle.setAttribute("aria-pressed", pinned ? "true" : "false");
+        pinToggle.setAttribute("aria-label", pinned ? "Disable always on top" : "Keep window on top");
+        pinToggle.title = pinned ? "取消置顶" : "窗口置顶";
+      }
+    };
+
     const decoratePipWindow = () => {
-      if (!featureSettings.pip || !isHotkeyWindow || !document.documentElement) return;
+      if (!featureSettings.pip || !isManagedPipWindow() || !document.documentElement) return;
       const root = document.documentElement;
+
+      if (isChatPipWindow()) {
+        const composer = document.querySelector(
+          'form[data-thread-find-composer="true"] [contenteditable="true"], [contenteditable="true"][aria-label="Message ChatGPT"]'
+        );
+        const composerSurface = composer?.closest(".composer-surface-chrome");
+        const composerForm = composerSurface?.closest("form");
+        const composerWrapper = composerForm?.parentElement || composerSurface?.parentElement;
+
+        root.setAttribute(PIP_WINDOW_ATTRIBUTE, "thread");
+        root.setAttribute(PIP_KIND_ATTRIBUTE, "chatgpt");
+        if (!root.hasAttribute(PIP_COMPOSER_OPEN_ATTRIBUTE)) {
+          root.setAttribute(PIP_COMPOSER_OPEN_ATTRIBUTE, "off");
+        }
+        document.querySelectorAll("[" + PIP_COMPOSER_ATTRIBUTE + "]").forEach((element) => {
+          if (element !== composerWrapper) element.removeAttribute(PIP_COMPOSER_ATTRIBUTE);
+        });
+        composerWrapper?.setAttribute(PIP_COMPOSER_ATTRIBUTE, "on");
+        ensureChatPipControls();
+        return;
+      }
+
+      root.setAttribute(PIP_KIND_ATTRIBUTE, "codex");
       const returnButton = document.querySelector('button[aria-label="Open in Main Window"]');
       const composer = document.querySelector('[data-codex-composer="true"]');
       const composerSurface = composer?.closest(".composer-surface-chrome");
@@ -1526,6 +1788,7 @@ function buildInjectionSource(css) {
     const removePipWindowEnhancements = () => {
       const root = document.documentElement;
       root.removeAttribute(PIP_WINDOW_ATTRIBUTE);
+      root.removeAttribute(PIP_KIND_ATTRIBUTE);
       root.removeAttribute(PIP_COMPOSER_OPEN_ATTRIBUTE);
       for (const element of document.querySelectorAll("[" + PIP_COMPOSER_ATTRIBUTE + "]")) {
         element.removeAttribute(PIP_COMPOSER_ATTRIBUTE);
@@ -1533,6 +1796,7 @@ function buildInjectionSource(css) {
       document.querySelector(".codex-pokedex-pip-composer-handle")?.remove();
       document.querySelector(".codex-pokedex-pip-stop-proxy")?.remove();
       document.querySelector(".codex-pokedex-pip-pin-toggle")?.remove();
+      document.querySelector(".codex-pokedex-chat-pip-actions")?.remove();
     };
 
     window.__codexPokedexPipHoverCleanup?.();
@@ -1550,7 +1814,7 @@ function buildInjectionSource(css) {
 
     window.__codexPokedexPipTitleCleanup?.();
     const handlePipTitleAction = (event) => {
-      if (!isHotkeyWindow) return;
+      if (!isManagedPipWindow()) return;
       const button = event.target.closest?.("button");
       if (button?.getAttribute("aria-label") !== "Dismiss Popout Window") return;
       event.preventDefault();
@@ -1618,11 +1882,11 @@ function buildInjectionSource(css) {
       root.setAttribute("data-codex-plus-accent", featureSettings.accent);
       root.setAttribute("data-codex-plus-pet-motion", featureSettings.petMotion);
       root.setAttribute("data-codex-plus-model-density", featureSettings.modelDensity);
-      const effectivePipPinned = isHotkeyWindow && pipWindowPinned != null
+      const effectivePipPinned = isManagedPipWindow() && pipWindowPinned != null
         ? pipWindowPinned
         : featureSettings.pipAlwaysOnTop;
       root.setAttribute("data-codex-plus-pip-always-on-top", effectivePipPinned ? "on" : "off");
-      if (isHotkeyWindow && pipThreadId) root.setAttribute(PIP_THREAD_ID_ATTRIBUTE, pipThreadId);
+      if (isManagedPipWindow() && pipThreadId) root.setAttribute(PIP_THREAD_ID_ATTRIBUTE, pipThreadId);
       root.style.setProperty("--codex-plus-accent", accent.color);
       root.style.setProperty("--codex-plus-accent-dark", accent.dark);
       root.style.setProperty("--codex-plus-highlight", accent.highlight);
@@ -1643,8 +1907,9 @@ function buildInjectionSource(css) {
       }
       if (isAvatarOverlay && featureSettings.pet) root.setAttribute(OVERLAY_ATTRIBUTE, "on");
       else root.removeAttribute(OVERLAY_ATTRIBUTE);
-      if (!isHotkeyWindow) {
+      if (!isManagedPipWindow()) {
         root.removeAttribute(PIP_WINDOW_ATTRIBUTE);
+        root.removeAttribute(PIP_KIND_ATTRIBUTE);
         root.removeAttribute(PIP_COMPOSER_OPEN_ATTRIBUTE);
       }
       let style = document.getElementById(STYLE_ID);
@@ -1882,9 +2147,10 @@ function buildMainControllerSource() {
       for (const window of electron.BrowserWindow.getAllWindows()) {
         if (window.isDestroyed()) continue;
         const route = getInitialRoute(window);
-        if (!route.startsWith("/hotkey-window")) continue;
+        const mappedThreadId = String(windowThreadIds.get(window.id) || "");
+        if (!route.startsWith("/hotkey-window") && !mappedThreadId) continue;
         const rendererState = await getRendererState(window);
-        const threadId = extractThreadId(route) || String(rendererState.threadId || "");
+        const threadId = mappedThreadId || String(rendererState.threadId || "") || extractThreadId(route);
         const isThread = Boolean(threadId) || rendererState.kind === "thread";
         if (!isThread) continue;
         entries.push({ window, route, rendererState, threadId });
@@ -1900,8 +2166,10 @@ function buildMainControllerSource() {
         }
       }
       if (!getWindow(controller.officialThreadWindowId)) {
-        const candidates = entries.filter((entry) => !orphanedWindowIds.has(entry.window.id));
-        const current = (candidates.length ? candidates : entries).sort((left, right) => right.window.id - left.window.id)[0];
+        const officialEntries = entries.filter((entry) => entry.route.startsWith("/hotkey-window"));
+        const candidates = officialEntries.filter((entry) => !orphanedWindowIds.has(entry.window.id));
+        const current = (candidates.length ? candidates : officialEntries)
+          .sort((left, right) => right.window.id - left.window.id)[0];
         controller.officialThreadWindowId = current?.window.id || null;
       }
       return entries;
@@ -1969,6 +2237,82 @@ function buildMainControllerSource() {
       } catch (error) {
         console.warn("Codex Plus Pro could not position the new Popout window", error);
       }
+    };
+
+    controller.openChatThread = async (threadId) => {
+      const rawThreadId = String(threadId || "");
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rawThreadId)) {
+        throw new Error("Invalid Chat task id");
+      }
+      const managedThreadId = "chatgpt:" + rawThreadId;
+      await collectThreadWindows();
+      const existingWindow = getWindow(threadWindowIds.get(managedThreadId));
+      if (existingWindow) {
+        if (!existingWindow.isVisible()) existingWindow.show();
+        existingWindow.focus();
+        existingWindow.moveTop();
+        return {
+          reused: true,
+          threadId: managedThreadId,
+          windowId: existingWindow.id,
+          pinned: windowPinStates.get(existingWindow.id) ?? controller.features.pipAlwaysOnTop,
+        };
+      }
+      if (threadWindowIds.size >= controller.maxThreadWindows) {
+        throw new Error("最多同时打开 4 个画中画窗口");
+      }
+
+      const appWindowServices = globalThis.__codexPlusProAppWindowServices;
+      if (typeof appWindowServices?.createFreshWindow !== "function") {
+        throw new Error("Chat window service is unavailable; restart Codex Plus Pro");
+      }
+      const hasPositionAnchor = windowOrder.some((windowId) => Boolean(getWindow(windowId)));
+      const window = await appWindowServices.createFreshWindow("/work/conversation/" + rawThreadId);
+      if (!window || window.isDestroyed?.()) throw new Error("The Chat window did not open");
+
+      try {
+        window.setSize(470, 640, false);
+        if (hasPositionAnchor) positionNewThreadWindow(window);
+        else window.center();
+      } catch (error) {
+        console.warn("Codex Plus Pro could not size the Chat window", error);
+      }
+
+      threadWindowIds.set(managedThreadId, window.id);
+      windowThreadIds.set(window.id, managedThreadId);
+      managedWindowIds.add(window.id);
+      if (!windowOrder.includes(window.id)) windowOrder.push(window.id);
+      const pinned = controller.features.pipAlwaysOnTop;
+      windowPinStates.set(window.id, pinned);
+
+      const readyDeadline = Date.now() + 8000;
+      while (!window.isDestroyed() && Date.now() < readyDeadline) {
+        try {
+          const ready = await window.webContents.executeJavaScript(
+            "document.readyState !== 'loading'",
+            true,
+          );
+          if (ready) break;
+        } catch {}
+        await new Promise((resolve) => setTimeout(resolve, 80));
+      }
+      if (window.isDestroyed()) {
+        removeWindowMapping(window.id);
+        throw new Error("The Chat window closed before it finished loading");
+      }
+
+      await markThreadWindow(window, managedThreadId, pinned);
+      await controller.apply();
+      if (!window.isVisible()) window.show();
+      window.focus();
+      window.moveTop();
+      return {
+        reused: false,
+        threadId: managedThreadId,
+        windowId: window.id,
+        pinned,
+        count: threadWindowIds.size,
+      };
     };
 
     controller.beginOpenThread = async (threadId) => {
@@ -2150,9 +2494,9 @@ function buildMainControllerSource() {
           continue;
         }
 
-        if (!initialRoute.startsWith("/hotkey-window")) continue;
-        const rendererState = await getRendererState(window);
         const mappedThreadId = windowThreadIds.get(id);
+        if (!initialRoute.startsWith("/hotkey-window") && !mappedThreadId) continue;
+        const rendererState = await getRendererState(window);
         if (!mappedThreadId && rendererState.kind !== "thread" && !extractThreadId(initialRoute)) {
           releasePopoutWindow(window);
           continue;

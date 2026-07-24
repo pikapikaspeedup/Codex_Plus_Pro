@@ -1146,6 +1146,49 @@
   color: #ffcf4a !important;
 }
 
+/* Chat tasks use a registered app window, reduced to the same compact monitor shell. */
+:root[data-codex-plus-pip="on"][data-codex-pokedex-pip-kind="chatgpt"] .app-shell-left-panel,
+:root[data-codex-plus-pip="on"][data-codex-pokedex-pip-kind="chatgpt"] header button[aria-label="Toggle side panel"] {
+  display: none !important;
+}
+
+:root[data-codex-plus-pip="on"][data-codex-pokedex-pip-kind="chatgpt"] .app-shell-main-content-frame {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+:root[data-codex-plus-pip="on"] .codex-pokedex-chat-pip-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  pointer-events: auto;
+}
+
+:root[data-codex-plus-pip="on"] .codex-pokedex-chat-pip-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  color: var(--color-token-text-secondary, #766b65);
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  -webkit-app-region: no-drag;
+}
+
+:root[data-codex-plus-pip="on"] .codex-pokedex-chat-pip-actions button:hover {
+  color: #b61f31;
+  background: rgb(182 31 49 / 0.1);
+}
+
+:root[data-codex-plus-pip="on"] .codex-pokedex-chat-pip-actions svg {
+  width: 18px;
+  height: 18px;
+}
+
 /* The Popout becomes a compact progress monitor until the pointer enters it. */
 :root[data-codex-plus-pip="on"][data-codex-pokedex-pip-window="thread"]
   [data-codex-pokedex-pip-composer="on"] {
