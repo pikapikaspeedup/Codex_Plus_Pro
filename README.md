@@ -13,6 +13,20 @@
 - 设置窗口可独立开关主题、宠物、画中画和便捷模型选择
 - `打开原版 Codex.app` 一键停止注入并恢复官方启动方式
 
+## 界面预览
+
+### 宝可梦训练家主题
+
+![Codex Plus Pro 宝可梦训练家主题完整界面](./docs/screenshots/pokedex-theme-overview.png)
+
+### 模型参数快捷栏
+
+![模型、思考强度与 Fast 模式快捷选择](./docs/screenshots/model-controls.png)
+
+### 多任务画中画
+
+![多个任务画中画窗口并行监控](./docs/screenshots/multi-picture-in-picture.png)
+
 ## 桌面宠物通知
 
 点击通知卡片左上角的 `×`，只会从宠物浮层中关闭这条通知，不会把对应任务标记为已读。
@@ -27,7 +41,7 @@
 - 已安装官方 ChatGPT / Codex App，并位于 `/Applications` 或 `~/Applications`
 - 系统自带的 `zsh`、`sips`、`iconutil`、`codesign` 和 `ditto`
 
-仓库不提交本机预构建的 `.app`、签名目录、日志或调试截图，以免把开发者证书、绝对路径、任务名和账号显示名带入公开历史。请在自己的 Mac 上构建：
+仓库只提交 README 展示所需的脱敏截图，不提交本机预构建的 `.app`、签名目录、日志或未脱敏调试截图，以免把开发者证书、绝对路径、任务名和账号显示名带入公开历史。请在自己的 Mac 上构建：
 
 ```zsh
 git clone https://github.com/pikapikaspeedup/Codex_Plus_Pro.git
@@ -101,7 +115,7 @@ dist/
 - 注入器不上传聊天内容，不读取账号凭据，不把页面正文写入日志。
 - 宠物关闭状态只保存在 Codex 本地存储中，内容为通知 ID、轮次指纹和关闭时间。
 - CDP 能操作当前 Codex 页面；运行期间，本机其他进程理论上也可能访问调试端口，因此只应在可信 Mac 上使用。
-- 公开仓库通过 `.gitignore` 排除预构建 App、签名、工作目录、日志和可能含真实任务信息的本机预览截图。
+- 公开仓库通过 `.gitignore` 排除预构建 App、签名、工作目录、日志和可能含真实任务信息的本机临时截图；README 使用的脱敏展示图单独保存在 `docs/screenshots/`。
 
 ## 开源与素材
 
